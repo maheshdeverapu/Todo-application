@@ -14,8 +14,8 @@ const HomeScreen = ()=>{
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log("data",data.post[0])
-            setTodo(data.post)
+            console.log("data",data.post[0].activity)
+            setTodo(data.post[0].activity)
             // setPosts(data.user);
             // debugger
           })
@@ -47,23 +47,12 @@ const HomeScreen = ()=>{
                     </tr>
                 </thead>
                 <tbody>
-                {/* {todo.map((ele, i) => {
-            return (
-              <tr key={i}>
-              
-                
-              
-                
-                <td>{ele.activity}</td>
-                <td></td>
-                <td></td>
-                <td>views</td>
-                <td></td>
-                <td>23</td>
-                <td>action</td>
-              </tr>
-            );
-          })} */}
+                  <tr>
+                    <td>
+                      {todo}
+                    </td>
+                  </tr>
+{/*            
                 {todo.map((ele,i)=>{
                     return(
                      
@@ -75,7 +64,7 @@ const HomeScreen = ()=>{
                             </tr>
                      
                     )
-                })}
+                })} */}
                 
                     
                 </tbody>
