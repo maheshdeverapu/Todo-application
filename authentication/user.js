@@ -76,7 +76,7 @@ router.post("/login",async(req,res)=>{
             error:"invalid credentials"
         })
     }
-    const token = jwt.sign({_id:user._id},process.env.SECRET)
+    const token = jwt.sign({_id:user._id},""+process.env.SECRET)
     res.json({
         user,
         token,
@@ -92,31 +92,26 @@ router.post("/login",async(req,res)=>{
 })
 
 
-router.post("/post",userLogin,async(req,res)=>{
+router.post("/addActivity",userLogin,async(req,res)=>{
     const {activity,status,timeTaken,action }=req.body;
+
     try{
+        // console.log(1)
         const new_post = {activity,status,timeTaken,action}
         const post = await Post.create(new_post)
-        console.log(post)
+        console.log(post,"post")
         const user= await User.findById(req.user._id)
         user.tasks.push(post._id);
         await user.save();
         res.status(201).json({
             status :"Task created",
-            task : new_task
+            task : post
         })
     }catch (error) {
         res.json({error:error.message})
     }
 })
 
-router.get("/home",userLogin,async(req,res)=>{
-    const post = await Post.find();
-    console.log(post[0].activity)
-    res.json({
-        post
-    })
-})
 router.put("/editActivity",userLogin,async(req,res)=>{
     try {
        let task=await Post.findById(req.body.task._id)
@@ -127,13 +122,17 @@ router.put("/editActivity",userLogin,async(req,res)=>{
     }
 })
 
-router.get("/myActivities",userLogin,async(req,res)=>{
+router.get("/home",userLogin,async(req,res)=>{
     let TaskIds=await User.findById(req.user._id)
+    console.log("TaskIds",TaskIds)
     let ids=TaskIds.tasks
+    console.log("ids",ids)
     // console.log(data.posts[0],typeof(data.posts[0]))
     var obj_ids = ids.map(function(id) { return String(id); });
-    let data=await Activity.find({"_id":{$in : obj_ids}})
-    console.log(data)
+    console.log("obj_ids",obj_ids)
+    let data=await Post.find({"_id":{$in : obj_ids}})
+
+    console.log(data,"data")
     res.send(data)
 })
 module.exports = router;

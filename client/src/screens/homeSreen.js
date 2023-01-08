@@ -1,24 +1,46 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Card from "./card";
 const HomeScreen = ()=>{
   let userName = JSON.parse(localStorage.getItem("user"));
   userName = userName.userName.split("@")[0];
-  console.log(userName,"userName")
+  // console.log(userName,"userName")
     const [todo,setTodo] = useState("");
+    const [todos,setTodos] = useState([]);
+    const [work,setWork] = useState(false);
+    const [isWorkStart,setIsWorkStart] = useState(false);
+    const [workDone,setWorkDone] = useState([]);
+    
     const navigate = useNavigate();
     useEffect(() => {
         // debugger
         fetch(`/home`, {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": localStorage.getItem("token")
+            "Authorization": "Bearer "+ localStorage.getItem("token")
           },
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log("data",data.post[0].activity)
-            setTodo(data.post[0].activity)
+            if(data.error){
+              alert(data.error)
+            }
+            else{
+              let arr;
+
+if (data) {
+  data[0] = "foo";
+} else {
+  data = ["bar"];
+}
+
+console.log(data[0]); // 'bar'
+              console.log("data",data)
+              // console.log("data.inner",data.post[0])
+              setTodos(data)
+              console.log(todos)
+            }
             // setPosts(data.user);
             // debugger
           })
@@ -26,20 +48,64 @@ const HomeScreen = ()=>{
             console.log("catch", err);
           })
           .finally();
-      }, []);
+      }, [todo]);
       console.log(todo)
+
+      function add(){
+        if(!todo){
+          alert("Please enter some activity");
+          return;
+        }
+        setWork(!work)
+        // console.log("check")
+        fetch("/addActivity",{
+          method:"post",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":"Bearer "+localStorage.getItem("token")
+        },
+        body: JSON.stringify({
+          activity:todo,
+          Status:"Pending"
+      })
+        }).then(res=>res.json()).then((data)=>{
+          console.log("iam in .then")
+          if(data.error){
+            alert(data.error)
+          }
+          else{
+            setIsWorkStart(false)
+          }
+        }).catch((err)=>{console.log("catch",err)})
+      }
+
+
+
       const logoutHandling =(e)=>{
         e.preventDefault();
         localStorage.clear();
-        navigate("/login")
+        navigate("/")
     }
     return(
         <>
-              <button ><Link className="app-todo" to={"/add"}>Add Todo</Link></button>
-      <select onChange={logoutHandling} className={"logout"}>
-        <option>{userName}</option>
-        <option >logout</option>
-      </select>
+              
+      <div>
+        <span>{userName}</span><span><button onClick={logoutHandling}>logout</button></span>
+
+      </div>
+      
+        
+      <div>
+        {workDone.map((eles)=>{
+          return(
+            {eles}
+          )
+        })}
+      </div>
+      <div>
+        <input type={"text"} onChange={(e)=>{setTodo(e.target.value)}}/>
+        <button onClick={add}>Add Activity</button>
+      </div>
             <table>
                 <thead>
                     <tr>
@@ -50,24 +116,16 @@ const HomeScreen = ()=>{
                     </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      {todo}
-                    </td>
-                  </tr>
-{/*            
-                {todo.map((ele,i)=>{
+              
+           
+                {todos.map((ele)=>{
                     return(
-                     
-                            <tr key={i}>
-                            <td>{ele.activity}</td>
-                            <td>{ele.status}</td>
-                            <td>{ele.timeTaken}</td>
-                            <td>{ele.action}</td>
-                            </tr>
+                            <>
+                            <Card ele={ele} workDone={workDone} setWorkDone={setWorkDone} isWorkStart={isWorkStart} setIsWorkStart={setIsWorkStart}/>
+                            </>
                      
                     )
-                })} */}
+                })}
                 
                     
                 </tbody>
