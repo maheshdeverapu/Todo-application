@@ -2,35 +2,53 @@ const jwt = require("jsonwebtoken");
 // const {SECRET} = require("../config.env");
 const mongoose = require("mongoose");
 const User = require("../models/userSchema");
-
-const userLogin = (req,res,next)=>{
-    const {authorization } = req.headers;
-
-    if(!authorization){
-        return res.status(400).json({
-            error:"you must logged in"
-        }
-        )
-    }
-    const token = authorization;
-    jwt.verify(token,process.env.SECRET,async(err,payload)=>{
-        if(err){
-            return res.status(400).json({
-                status:"failed",
-                message:err.message
+  
+exports.userLogin=async function(req,res,next){
+    try {
+        const {authorization}= req.headers
+        if(!authorization ||authorization== "Bearer null"){
+            return res.json({
+                error:"Please login first"
             })
         }
-        // console.log(payload)
-
-        const {_id} = payload;
-        // console.log(typeof(_id))
-        const user = await User.findById(_id);
-        // console.log(user)
-        
-        req.user = user;
-        // req.user = user.userName
-        next();
-    })
+        let token=authorization.replace("Bearer ","")
+        const user=jwt.verify(token,process.env.SECRET)
+        req.user=await User.findById(user._id)
+        next()
+    } catch (error) {
+        res.json({
+            error:error.message
+        })   
+    }
 }
+// const userLogin = (req,res,next)=>{
+//     const {authorization } = req.headers;
 
-module.exports = userLogin
+//     if(!authorization){
+//         return res.status(400).json({
+//             error:"you must logged in"
+//         }
+//         )
+//     }
+//     const token = authorization;
+//     jwt.verify(token,process.env.SECRET,async(err,payload)=>{
+//         if(err){
+//             return res.status(400).json({
+//                 status:"failed",
+//                 message:err.message
+//             })
+//         }
+//         // console.log(payload)
+
+//         const {_id} = payload;
+//         // console.log(typeof(_id))
+//         const user = await User.findById(_id);
+//         // console.log(user)
+        
+//         req.user = user;
+//         // req.user = user.userName
+//         next();
+//     })
+// }
+
+// module.exports = userLogin
