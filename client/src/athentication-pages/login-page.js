@@ -3,30 +3,37 @@ import {useState} from "react";
 import React from "react";
 const Login = ()=>{
     // const [userDetails,setUserDetails] = useState({userId:"",password:""})
+   
+    
+    // user = user.split("@")[0];
     const [userName,setUserName] = useState("")
     const [password,setPassword] = useState("")
     const navigate = useNavigate();
     const loginHandling =(e)=>{
         e.preventDefault();
         if(!userName || !password){
-            alert("please enter all fields")
+            return alert("please enter all fields")
         }
         fetch("/login",{
             method:"post",
             headers:{
                 "Content-Type":"application/json"                
             },
-
             body:JSON.stringify({
                 userName,
                 password
             })
         }).then(res=>res.json()).then((data)=>{
-            console.log(data.message, "result")
-            alert(data.message)   
-            debugger
-            localStorage.setItem("token",data.token)
-            localStorage.setItem("userName",data.userName)
+            if(data.error){
+                alert(data.error)
+            }
+            else{
+                localStorage.setItem("token",data.token);
+                localStorage.setItem("user",JSON.stringify(data.user));
+                console.log(data.user)
+                alert("login successfully");
+                navigate("/home")
+            }
     }).catch((err)=>{
         console.log(err)
     }).finally()

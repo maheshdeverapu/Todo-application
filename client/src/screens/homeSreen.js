@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 const HomeScreen = ()=>{
+  let userName = JSON.parse(localStorage.getItem("user"));
+  userName = userName.userName.split("@")[0];
+  console.log(userName,"userName")
     const [todo,setTodo] = useState("");
     const navigate = useNavigate();
     useEffect(() => {
@@ -34,7 +37,7 @@ const HomeScreen = ()=>{
         <>
               <button ><Link className="app-todo" to={"/add"}>Add Todo</Link></button>
       <select onChange={logoutHandling} className={"logout"}>
-        <option>{(localStorage.getItem("userName"))}</option>
+        <option>{userName}</option>
         <option >logout</option>
       </select>
             <table>

@@ -14,6 +14,9 @@ const Signup = ()=>{
         e.preventDefault();
         console.log(userName,password,confirmPassword)
         // debugger
+        if(!userName || !password || !confirmPassword){
+           return alert("Please enter all fields")
+        }
         fetch("/register",{
             method :"post",
             headers : {"Content-Type" : "application/json"},
@@ -23,14 +26,14 @@ const Signup = ()=>{
                 confirmPassword
             })
         }).then(res=>res.json()).then((data)=>{
-            alert(data.message)
-            if(data.status == "success"){
-                setPopup(true)
-                console.log(data.message, "result")
-                console.log(data)
-                
+            if(data.error){
+                alert(data.error)
             }
-            
+            else{
+                alert("accout created succesfully")
+                navigate("/login")
+            }
+     
     }).catch((err)=>{
         console.log(err,"i am here")
     }).finally()

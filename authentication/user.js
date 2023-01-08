@@ -16,24 +16,17 @@ router.post("/register",async(req,res)=>{
     console.log(req.body)
     try{
     const {userName,password,confirmPassword}= req.body;
-    if(!userName || !password || !confirmPassword){
-        return res.status(400).json({
-            status:"failed",
-            message:"please fill all fields..."
-        })
-    }
+    
     if(password !==confirmPassword){
         return res.status(400).json({
-            status:"failed",
-            message:"password and confirm password must be same"
+           error : "Password and confirm password must be same"
         })
     }
     let user = await User.findOne({userName});
     // console.log(user == null)
         if(user){
             return res.status(400).json({
-                status:"failed",
-                message:"username is already existed"
+                error:"user name already exists"
             })
         }
 
@@ -44,8 +37,7 @@ router.post("/register",async(req,res)=>{
         bcrypt.hash(password,10,async(err,hash)=>{
             if(err){
                 return res.json({
-                    status:"Failed",
-                    message:err.message
+                    error: err.message
                 }) 
             }
             user = await User.create({
@@ -62,8 +54,7 @@ router.post("/register",async(req,res)=>{
 
 }catch(err){
     return res.status(400).json({
-        status:"failed",
-        message:err.message
+       error:err.message
     })
 }
 })
@@ -71,30 +62,23 @@ router.post("/register",async(req,res)=>{
 router.post("/login",async(req,res)=>{
     try{
     const {userName,password}= req.body;
-    if(!userName || !password){
-        return res.status(400).json({
-            status:"failed",
-            message:"please fill all fields..."
-        })
-    }
+  
     const user = await User.findOne({userName});
     // console.log(user == null)
         if(!user){
             return res.status(400).json({
-                status:"failed",
-                message:"username does not exit"
+                error:"username does not exit"
             })
         }
     let loginPassword = await bcrypt.compare(password,user.password);
     if(!loginPassword){
         return res.status(422).json({
-            status:"failed",
-            message:"invalid credentials"
+            error:"invalid credentials"
         })
     }
     const token = jwt.sign({_id:user._id},process.env.SECRET)
     res.json({
-        userName,
+        user,
         token,
         status:"succes",
         message:"login successfully done"
@@ -102,41 +86,27 @@ router.post("/login",async(req,res)=>{
   
 }catch(err){
     return res.status(400).json({
-        status:"failed",
-        message:err.message
+        error:err.message
     })
 }
 })
 
 
-
-router.get("/trail",userLogin,(req,res)=>{
-    res.json({
-        data:"i am okay"
-    })
-})
-
 router.post("/post",userLogin,async(req,res)=>{
-    const {activity,status }=req.body;
+    const {activity,status,timeTaken,action }=req.body;
     try{
-        if(!activity){
-            return res.json({
-                message:"please enter activity"
-            })
-        }
-        const post = await Post.create({
-            activity,
-            status:"pending",
-            timeTaken:"",
-            action:""
-        })
+        const new_post = {activity,status,timeTaken,action}
+        const post = await Post.create(new_post)
         console.log(post)
-        res.json({
-            status:"success",
-            message:"todo added successfully"
+        const user= await User.findById(req.user._id)
+        user.tasks.push(post._id);
+        await user.save();
+        res.status(201).json({
+            status :"Task created",
+            task : new_task
         })
-    }catch(err){
-        res.status(422).send(err)
+    }catch (error) {
+        res.json({error:error.message})
     }
 })
 
@@ -147,5 +117,23 @@ router.get("/home",userLogin,async(req,res)=>{
         post
     })
 })
+router.put("/editActivity",userLogin,async(req,res)=>{
+    try {
+       let task=await Post.findById(req.body.task._id)
+       let updateTask= await Post.updateOne({_id:req.body.task._id},{$set:{TimeTaken:req.body.TimeTaken}})
+       res.json(task)
+    } catch (error) {
+        res.json({error:error.message})
+    }
+})
 
+router.get("/myActivities",userLogin,async(req,res)=>{
+    let TaskIds=await User.findById(req.user._id)
+    let ids=TaskIds.tasks
+    // console.log(data.posts[0],typeof(data.posts[0]))
+    var obj_ids = ids.map(function(id) { return String(id); });
+    let data=await Activity.find({"_id":{$in : obj_ids}})
+    console.log(data)
+    res.send(data)
+})
 module.exports = router;
