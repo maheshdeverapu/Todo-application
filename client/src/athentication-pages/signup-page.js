@@ -31,7 +31,7 @@ const Signup = ()=>{
             }
             else{
                 alert("accout created succesfully")
-                navigate("/login")
+                navigate("/")
             }
      
     }).catch((err)=>{
@@ -65,7 +65,7 @@ const Signup = ()=>{
                     <input className="signup-confirm-password" type={"password"} id={"confirm-password"} placeholder={"CONFIRM PASSWORD"} onChange={(event)=>{setConfirmPassword(event.target.value)}}></input>
                 </div>
                 <button  className="signup-submit" onClick={signupHandling}>Signup</button>
-                <button><Link to="/login">Member Login</Link></button>
+                <button><Link to="/">Member Login</Link></button>
                 {/* {popUp && (
                     <>
                     <div>{popUp}</div>
