@@ -94,11 +94,11 @@ console.log(data[0]); // 'bar'
 
       </div>
       
-        
+       <div><b>Todo Application</b><b>History</b></div> 
       <div>
         {workDone.map((eles)=>{
           return(
-            {eles}
+            <p>{eles}</p>
           )
         })}
       </div>

@@ -7,12 +7,12 @@ const Card = ({ ele, setWorkDone, workDone, isWorkStart, setIsWorkStart }) => {
   const [dt1,setDt1]=useState()
   const[dt2,setDt2]=useState()
   const startAction = () => {
-//     if (isAnyStart) {
-//       alert("finishing the ongoing task first or pause the ongoing task")
-//       return
-//     }
-//     setStart(false)
-//     setIsAnyStart(true)
+    if (isWorkStart) {
+      alert("finishing the ongoing task first or pause the ongoing task")
+      return
+    }
+    setStart(false)
+    setIsWorkStart(true)
 //     // dt1 = Date.now()%100
 //     setDt1(moment.utc())
 //     console.log(dt1)
@@ -24,45 +24,45 @@ const Card = ({ ele, setWorkDone, workDone, isWorkStart, setIsWorkStart }) => {
     
   }, [])
   const pauseHandle = () => {
-//     setIsAnyStart(false)
-//     setStart(true)
+    setIsWorkStart(false)
+    setStart(true)
 //     // dt2 = Date.now()%100
 //     setDt2(moment.utc())
 //     console.log(dt2)
 //     let duration=moment.duration(dt2.diff(dt1))
-//     fetch("/editActivity",{
-//       method:"PUT",
-//       headers:{
-//         "Content-type": "application/json",
-//         "Authorization":"Bearer "+ localStorage.getItem("jwt")
-//       },
-//       body:JSON.stringify({
-//         task,
-//         TimeTaken:parseInt(duration.asMinutes())%60
-//       })
-//     }).then(res=>res.json())
-//     .then(data=>{
-//       if(data.error){
-//         alert(data.error)
-//       }
-//       else{
-//         alert("updated")
-//       }
-//     })
+    fetch("/editActivity",{
+      method:"PUT",
+      headers:{
+        "Content-type": "application/json",
+        "Authorization":"Bearer "+ localStorage.getItem("token")
+      },
+      body:JSON.stringify({
+        ele,
+        // TimeTaken:parseInt(duration.asMinutes())%60
+      })
+    }).then(res=>res.json())
+    .then(data=>{
+      if(data.error){
+        alert(data.error)
+      }
+      else{
+        alert("updated")
+      }
+    })
   }
   const EndHandle = () => {
-//     console.log(task.Activity)
-//     setIsAnyStart(false)
+//     console.log(ele.activity)
+    setIsWorkStart(false)
 //     // dt2 = Date.now()
 //     setDt2(Date.now())
-//     setCompletedTasks([...completedTasks, task.Activity])
+setWorkDone([...workDone, ele.activity])
   }
-  function diff_minutes(dt2, dt1) {
-    // var diff=(dt2.getTime()-dt1.getTime())/1000
-    var diff = dt2 - dt1
-    diff /= 60
-    return Math.abs(Math.round(diff))
-  }
+  // function diff_minutes(dt2, dt1) {
+  //   // var diff=(dt2.getTime()-dt1.getTime())/1000
+  //   var diff = dt2 - dt1
+  //   diff /= 60
+  //   return Math.abs(Math.round(diff))
+  // }
   return (
     <>
       <tr>

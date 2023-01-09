@@ -14,7 +14,7 @@ const User = require("../models/userSchema");
                 })
             }
             let token=authorization.replace("Bearer ","")
-            const decoded=jwt.verify(token,process.env.SECRET)
+            const decoded=jwt.verify(token,""+process.env.SECRET)
             req.user=await User.findById(decoded._id)
             next()
         } catch (error) {
