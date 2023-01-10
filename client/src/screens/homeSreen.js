@@ -3,8 +3,13 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Card from "./card";
 const HomeScreen = ()=>{
-  let userName = JSON.parse(localStorage.getItem("user"));
-  userName = userName.userName.split("@")[0];
+  let user_name;
+  try{
+  user_name = JSON.parse(localStorage.getItem("user"));
+   user_name = user_name.userName.split("@")[0];
+  }catch(err){
+    console.log("error from json.pars",err)
+  }
   // console.log(userName,"userName")
     const [todo,setTodo] = useState("");
     const [todos,setTodos] = useState([]);
@@ -14,28 +19,47 @@ const HomeScreen = ()=>{
     
     const navigate = useNavigate();
     useEffect(() => {
+
+
+     // 1
+      // fetch('https://example.com/some/path/to/json')
+      // .then(function (response) {
+      //     responseClone = response.clone(); // 2
+      //     return response.json();
+      // })
+      // .then(function (data) {
+      //     // Do something with data
+      // }, function (rejectionReason) { // 3
+      //     console.log('Error parsing JSON from response:', rejectionReason, responseClone); // 4
+      //     responseClone.text() // 5
+      //     .then(function (bodyText) {
+      //         console.log('Received the following instead of valid JSON:', bodyText); // 6
+      //     });
+      // });
+
+
+
         // debugger
-        fetch(`/home`, {
+        fetch("/home", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer "+ localStorage.getItem("token")
           },
         })
-          .then((res) => res.json())
+          .then(res=>res.json())
           .then((data) => {
+            console.log(data,"data")
             if(data.error){
               alert(data.error)
+              
             }
             else{
-              let arr;
-
-if (data) {
-  data[0] = "foo";
-} else {
-  data = ["bar"];
-}
-
-console.log(data[0]); // 'bar'
+            // if (data) {
+            //   data[0] = "foo";
+            // } else {
+            //   data = ["bar"];
+            // }
+            //   console.log(data[0]); // 'bar'
               console.log("data",data)
               // console.log("data.inner",data.post[0])
               setTodos(data)
@@ -43,7 +67,7 @@ console.log(data[0]); // 'bar'
             }
             // setPosts(data.user);
             // debugger
-          })
+        })
           .catch((err) => {
             console.log("catch", err);
           })
@@ -80,7 +104,6 @@ console.log(data[0]); // 'bar'
       }
 
 
-
       const logoutHandling =(e)=>{
         e.preventDefault();
         localStorage.clear();
@@ -90,7 +113,7 @@ console.log(data[0]); // 'bar'
         <>
               
       <div>
-        <span>{userName}</span><span><button onClick={logoutHandling}>logout</button></span>
+        <span>{user_name}</span><span><button onClick={logoutHandling}>logout</button></span>
 
       </div>
       

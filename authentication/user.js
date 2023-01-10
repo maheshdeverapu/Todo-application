@@ -123,13 +123,14 @@ router.put("/editActivity",userLogin,async(req,res)=>{
 })
 
 router.get("/home",userLogin,async(req,res)=>{
+    // console.log(req.user)
     let TaskIds=await User.findById(req.user._id)
-    console.log("TaskIds",TaskIds)
+    // console.log("TaskIds",TaskIds)
     let ids=TaskIds.tasks
-    console.log("ids",ids)
+    // console.log("ids",ids)
     // console.log(data.posts[0],typeof(data.posts[0]))
     var obj_ids = ids.map(function(id) { return String(id); });
-    console.log("obj_ids",obj_ids)
+    // console.log("obj_ids",obj_ids)
     let data=await Post.find({"_id":{$in : obj_ids}})
 
     console.log(data,"data")
