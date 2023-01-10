@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/maheshdeverapu/Todo-application/issues"
   },
-
+  "homepage": "https://github.com/maheshdeverapu/Todo-application#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
