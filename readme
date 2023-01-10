@@ -5,3 +5,5 @@ password=eNh34Ne0vqkC9ftP
 mongodb+srv://Todo-application:<password>@cluster0.kw6pqsx.mongodb.net/?retryWrites=true&w=majority
 mongodb+srv://Todo-application:eNh34Ne0vqkC9ftP@cluster0.kw6pqsx.mongodb.net/?retryWrites=true&w=majority
 
+
+  "homepage": "https://github.com/maheshdeverapu/Todo-application#readme",
